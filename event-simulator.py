@@ -2,6 +2,7 @@ import time
 import random
 import logging
 import os
+from logging.config import dictConfig
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
@@ -18,6 +19,30 @@ special_message = {
 
 PRINT_SPECIAL_MESSAGE = "PRINT_SPECIAL_MESSAGE" in os.environ and os.environ["PRINT_SPECIAL_MESSAGE"] or True
 OVERRIDE_USER = "OVERRIDE_USER" in os.environ and os.environ["OVERRIDE_USER"] or "USER7"
+LOG_HANDLERS = "LOG_HANDLERS" in os.environ and os.environ["LOG_HANDLERS"] or "file,console"
+
+dictConfig({
+    'version': 1,
+    'formatters': {'default': {
+        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+    }},
+    'handlers': {
+        'file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': '/log/app.log',
+            'maxBytes': 5242880,
+            'backupCount': 3,
+            'formatter': 'default'
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'default'
+        }},
+    'root': {
+        'level': 'INFO',
+        'handlers': LOG_HANDLERS.split(",")
+    }
+})
 
 i = 0
 
